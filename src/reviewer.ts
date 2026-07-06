@@ -175,8 +175,13 @@ export async function handleReview(
 
 export const reviewerDefinition = defineTransformer({
   setup(ctx: SetupContext) {
+    // Single-purpose extension: register only the bare verb. The daemon
+    // advertises this as `/reviewer`, `/hydra reviewer`, and
+    // `/hydra hydra-acp-reviewer`. Registering an additional `"review"`
+    // verb would clutter the palette with near-duplicate `/reviewer
+    // review` entries for no behavioral gain.
     ctx.registerCommand(
-      { verb: "review", description: "Adversarially review changes in a forked session.", argsHint: "[<agent>] [<path>]" },
+      { verb: "", description: "Adversarially review changes in a forked session.", argsHint: "[<agent>] [<path>] [--model <id>] [--scope=cwd]" },
       handleReview,
     );
   },

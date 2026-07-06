@@ -150,7 +150,7 @@ describe("reviewer — end-to-end smoke", () => {
       jsonrpc: "2.0",
       id: 1,
       method: "hydra-acp/commands/invoke",
-      params: { sessionId: "parent-session-smoke", verb: "review", args: "" },
+      params: { sessionId: "parent-session-smoke", verb: "", args: "" },
     });
 
     await new Promise((r) => setTimeout(r, 300));

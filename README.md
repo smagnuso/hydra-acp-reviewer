@@ -1,6 +1,6 @@
 # hydra-acp-reviewer
 
-Adversarial-but-honest code review for hydra-acp. You type `/review`; your
+Adversarial-but-honest code review for hydra-acp. You type `/reviewer`; your
 agent forks a session, feeds it the diff plus an adversarial rubric, and
 returns a structured critique — blocking issues first, then should-fix
 items, then nits, with proposed minimal fixes and an explicit "checked
@@ -8,14 +8,14 @@ and found OK" section.
 
 ## How you use it
 
-Run `/review` from any chat session. By default the reviewer targets the
+Run `/reviewer` from any chat session. By default the reviewer targets the
 files the current session's tool calls have edited — the "what did we just
 do" surface. If the session touched nothing, it falls back to `git diff HEAD`
 in the workspace. Either way, you get a clickable link to jump into the
 forked review session.
 
 ```
-user> /review codex
+user> /reviewer codex
 
 agent> Reviewing with codex ...
        [forks session, sends seed prompt]
@@ -26,7 +26,7 @@ agent> Reviewing with codex ...
 Or review a specific path without an agent override:
 
 ```
-user> /review src/auth.ts
+user> /reviewer src/auth.ts
 
 agent> Reviewing with default agent ...
        [forks session, feeds contents of src/auth.ts]
@@ -36,7 +36,7 @@ agent> Reviewing with default agent ...
 Free-form focus works too — tell the reviewer what to look for:
 
 ```
-user> /review "check for open redirects in login flow"
+user> /reviewer "check for open redirects in login flow"
 
 agent> Reviewing with default agent ...
        [forks session, adds focus to seed prompt]
@@ -47,11 +47,11 @@ agent> Reviewing with default agent ...
 
 | Form | Effect |
 |------|--------|
-| `/review` | Fork a review of files touched by this session; falls back to `git diff HEAD` if the session touched nothing. |
-| `/review <agent>` | Same, but use a specific installed agent (e.g. `codex`). |
-| `/review <path>` | Review a specific file instead of the session-touched set. |
-| `/review <agent> <path>` | Agent override + path target. |
-| `/review "<focus>"` | Free-form focus string quoted to pass as review instructions. |
+| `/reviewer` | Fork a review of files touched by this session; falls back to `git diff HEAD` if the session touched nothing. |
+| `/reviewer <agent>` | Same, but use a specific installed agent (e.g. `codex`). |
+| `/reviewer <path>` | Review a specific file instead of the session-touched set. |
+| `/reviewer <agent> <path>` | Agent override + path target. |
+| `/reviewer "<focus>"` | Free-form focus string quoted to pass as review instructions. |
 | `--agent <id>` / `--path <p>` | Explicit flag forms, combinable with positionals. |
 | `--model <id>` | Override the model on the forked review session (e.g. `--model claude-opus-4-7`). |
 | `--scope=cwd` | Force git-diff-of-cwd scope; bypass session-touched-files detection. |
@@ -60,7 +60,7 @@ agent> Reviewing with default agent ...
 
 The reviewer picks a target in this order:
 
-1. **Explicit path** (`/review <path>` or `--path <p>`) — review that file.
+1. **Explicit path** (`/reviewer <path>` or `--path <p>`) — review that file.
 2. **Session-touched** — query the daemon's `GET /v1/sessions/:id/diff` for a
    per-file diff reconstructed from the session's tool-call payloads. This is
    the default and matches user intent for "review what we just did."
@@ -132,7 +132,7 @@ npm run watch    # rebuild on change
 
 ## Status
 
-Functional for /review with fork wiring, diff resolution (dirty tree,
+Functional for /reviewer with fork wiring, diff resolution (dirty tree,
 branch diff, last-commit fallback), adversarial rubric seeding, and
 hydra:// URL emission. Ready for use as a standalone review tool or in
 conjunction with the planner's competition and tiered-agent patterns.
