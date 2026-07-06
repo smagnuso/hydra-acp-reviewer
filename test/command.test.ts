@@ -151,4 +151,40 @@ describe("parseReviewInvocation", () => {
     const result = parseReviewInvocation(["--scope=cwd", "myfile.ts"], AGENTS);
     assert.deepStrictEqual(result, { path: "myfile.ts", forceCwdScope: true });
   });
+
+  it("--model=<id> sets model", () => {
+    const result = parseReviewInvocation(["--model=claude-opus-4-7"], AGENTS);
+    assert.deepStrictEqual(result, { model: "claude-opus-4-7" });
+  });
+
+  it("--model <id> (space form) sets model", () => {
+    const result = parseReviewInvocation(["--model", "claude-opus-4-7"], AGENTS);
+    assert.deepStrictEqual(result, { model: "claude-opus-4-7" });
+  });
+
+  it("--model without value throws", () => {
+    assert.throws(
+      () => parseReviewInvocation(["--model"], AGENTS),
+      /--model flag requires a value/,
+    );
+  });
+
+  it("--model= (empty) throws", () => {
+    assert.throws(
+      () => parseReviewInvocation(["--model="], AGENTS),
+      /--model= requires a value/,
+    );
+  });
+
+  it("--model + --agent + positional path — all combined", () => {
+    const result = parseReviewInvocation(
+      ["--model", "opus", "--agent", "codex", "src/foo.ts"],
+      AGENTS,
+    );
+    assert.deepStrictEqual(result, {
+      agent: "codex",
+      path: "src/foo.ts",
+      model: "opus",
+    });
+  });
 });

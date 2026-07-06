@@ -33,6 +33,7 @@ export async function handleReview(
     path?: string;
     focus?: string;
     forceCwdScope?: boolean;
+    model?: string;
   };
   try {
     intent = parseReviewInvocation(inv.argv, agentIds);
@@ -122,6 +123,9 @@ export async function handleReview(
   };
   if (intent.agent) {
     forkParams.agentId = intent.agent;
+  }
+  if (intent.model) {
+    forkParams.model = intent.model;
   }
 
   let forkResult: { sessionId?: string };

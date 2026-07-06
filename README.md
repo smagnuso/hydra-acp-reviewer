@@ -53,6 +53,7 @@ agent> Reviewing with default agent ...
 | `/review <agent> <path>` | Agent override + path target. |
 | `/review "<focus>"` | Free-form focus string quoted to pass as review instructions. |
 | `--agent <id>` / `--path <p>` | Explicit flag forms, combinable with positionals. |
+| `--model <id>` | Override the model on the forked review session (e.g. `--model claude-opus-4-7`). |
 | `--scope=cwd` | Force git-diff-of-cwd scope; bypass session-touched-files detection. |
 
 ## Scope resolution

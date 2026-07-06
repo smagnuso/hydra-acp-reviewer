@@ -164,6 +164,30 @@ describe("handleReview", () => {
       const forkParams = rpcCalls[1].params as Record<string, unknown>;
       assert.equal(forkParams.agentId, "gpt-acp");
     });
+
+    it("passes model to fork params when --model given", async () => {
+      const { ctx, calls } = createMockCtx();
+
+      ctx.rpc = makeRpc(calls, async (method: string) => {
+        if (method === "hydra-acp/agents/list") {
+          return { agents: [{ id: "claude-acp", installed: "yes" }] };
+        }
+        if (method === "hydra-acp/session/fork") {
+          return { sessionId: "forked-session-mm" };
+        }
+        return {};
+      });
+
+      const result = await handleReview(
+        makeInvocation(["--model", "claude-opus-4-7", filePath]),
+        ctx,
+      );
+      assert.equal(result.ok, true);
+
+      const rpcCalls = calls.filter((c) => c.method !== "__emitMessage__");
+      const forkParams = rpcCalls[1].params as Record<string, unknown>;
+      assert.equal(forkParams.model, "claude-opus-4-7");
+    });
   });
 
   describe("error cases", () => {

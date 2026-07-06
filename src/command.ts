@@ -6,6 +6,7 @@ export interface ReviewIntent {
   path?: string;
   focus?: string;
   forceCwdScope?: boolean;
+  model?: string;
 }
 
 /**
@@ -27,6 +28,7 @@ export function parseReviewInvocation(
 ): ReviewIntent {
   let flagAgent: string | undefined;
   let flagPath: string | undefined;
+  let flagModel: string | undefined;
   let forceCwdScope = false;
 
   const parseScopeValue = (v: string): void => {
@@ -69,6 +71,20 @@ export function parseReviewInvocation(
       i++;
     } else if (arg.startsWith("--scope=")) {
       parseScopeValue(arg.slice("--scope=".length));
+    } else if (arg === "--model") {
+      if (i + 1 >= argv.length) {
+        throw new Error(
+          '--model flag requires a value; expected: --model <model-id>',
+        );
+      }
+      flagModel = argv[i + 1]!;
+      i++;
+    } else if (arg.startsWith("--model=")) {
+      const val = arg.slice("--model=".length);
+      if (val.length === 0) {
+        throw new Error('--model= requires a value');
+      }
+      flagModel = val;
     } else {
       remaining.push(arg);
     }
@@ -98,6 +114,9 @@ export function parseReviewInvocation(
   }
   if (forceCwdScope) {
     intent.forceCwdScope = true;
+  }
+  if (flagModel !== undefined) {
+    intent.model = flagModel;
   }
 
   // If both flags are set, positionals are not expected for agent/path
