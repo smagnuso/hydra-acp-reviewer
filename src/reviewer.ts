@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { isAbsolute, resolve } from "node:path";
 import { defineTransformer, type CommandInvocation, type Context, type SetupContext } from "@hydra-acp/transformer";
 import { parseReviewInvocation } from "./command.js";
 import { resolveDiff } from "./diff.js";
@@ -68,7 +69,12 @@ export async function handleReview(
 
   if (intent.path) {
     try {
-      const absPath = intent.path.startsWith("/") ? intent.path : `${ctx.cwd}/${intent.path}`;
+      // isAbsolute + resolve, not a leading "/" and string concatenation.
+      // A Windows absolute path is C:\..., which does not start with a
+      // slash, so it was treated as relative and glued onto cwd, producing
+      // a path that cannot exist. The read then failed and the whole
+      // review was reported as "cannot read <file>".
+      const absPath = isAbsolute(intent.path) ? intent.path : resolve(ctx.cwd, intent.path);
       fileContents = readFileSync(absPath, "utf8");
       filePath = intent.path;
     } catch (err) {
